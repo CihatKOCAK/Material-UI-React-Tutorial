@@ -5,10 +5,19 @@ Material UI React Tutorial
 
 - [Lesson-1](#lesson-1)
     - UX Design Example
+- [Lesson-2](#lesson-2)
+    - Make Styles Example
 
 
 ## Lesson-1 UX Design Example  <a name="lesson-1"></a>
 
+[to go to the lesson](ux-design)
+
 ![github](ux-design/readme-img/capture.PNG)
 
-[to go to the project](ux-design)
+## Lesson-2 Make Styles Example  <a name="lesson-2"></a>
+
+[to go to the lesson](make-styles)
+
+
+
