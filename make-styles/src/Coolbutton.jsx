@@ -7,9 +7,9 @@ const useStyles = makeStyles(theme => ({
         return {
             color: props.cool ? "blue !important" : "red !important",
             backgroundColor: props.cool ? "orange !important" : "yellow !important",
-            [theme.breakpoints.up('sm')]: {
+            [theme.breakpoints.down('sm')]: {
                 color: 'cyan !important',
-                backgroundColor:'blue !important',
+                backgroundColor:'brown !important',
             },
         }
     },
