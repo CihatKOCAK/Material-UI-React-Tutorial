@@ -18,7 +18,7 @@ export default function Typographyexapmles() {
         //className={classes.typographyStyle}
         //fontFamily="sans-serif"
         //fontSize='8em'
-        //align='right'
+        align='center'
         //color='secondary'
         //gutterBottom
         //classes={{ gutterBottom: classes.gutterBottom }}
