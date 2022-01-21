@@ -6,7 +6,13 @@ Material UI React Tutorial
 - [Lesson-1](#lesson-1)
     - UX Design Example
 - [Lesson-2](#lesson-2)
-    - Make Styles Example
+    - Make Style
+    - Conditional style
+    - Buttons
+    - Typographys 
+    - Theme Change
+- [Lesson-3](#lesson-3)
+    - Grid & Grid Layout
 
 
 ## Lesson-1 UX Design Example  <a name="lesson-1"></a>
@@ -15,9 +21,13 @@ Material UI React Tutorial
 
 ![github](ux-design/readme-img/capture.PNG)
 
-## Lesson-2 Make Styles Example  <a name="lesson-2"></a>
+## Lesson-2  <a name="lesson-2"></a>
 
 [to go to the lesson](make-styles)
+
+## Lesson-3  <a name="lesson-3"></a>
+
+[to go to the lesson](grids)
 
 
 
