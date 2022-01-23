@@ -1,9 +1,10 @@
 import React from 'react';
 import {
-  AppBar, Card, CardContent, CardMedia, CircularProgress, Grid, makeStyles, Toolbar
+  AppBar, Card, CardContent, CardMedia, CircularProgress, Grid, makeStyles, Toolbar, Typography
 } from "@material-ui/core"
 import mockData from "./mockData";
 import { useState } from 'react';
+import { toFirstCharUppercase } from './contants';
 
 const useStyles = makeStyles({
   pokedexContainer: {
@@ -11,24 +12,33 @@ const useStyles = makeStyles({
     paddingLeft: '50px',
     paddingRight: '50px',
   },
-  cardMedia:{
-    margin:'auto',
+  cardMedia: {
+    margin: 'auto',
+  },
+  CardContent: {
+    textAlign: 'center',
   }
 });
 
-export default function Pokedex() {
 
+
+
+export default function Pokedex(props) {
+  const { history } = props;
   const getPokemonCard = (pokemonId) => {
     //console.log(pokemonData[`${pokemonId}`]);
     const { id, name } = pokemonData[`${pokemonId}`];
     const sprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
     return (
       <Grid item xs={12} sm={4}>
-        <Card><CardMedia
+        <Card onClick={() => history.push(`/${pokemonId}`)}><CardMedia
           className={classes.cardMedia}
           image={sprite}
           style={{ width: '130px', height: '130px' }}
-        /> </Card>
+        />
+          <CardContent className={classes.CardContent}>
+            <Typography>{`${id}. ${toFirstCharUppercase(name)}`}</Typography>
+          </CardContent> </Card>
       </Grid>
     )
   };
