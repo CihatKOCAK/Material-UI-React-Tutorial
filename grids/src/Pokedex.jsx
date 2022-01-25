@@ -1,95 +1,126 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import {
-  AppBar, Card, CardContent, CardMedia, CircularProgress, Grid, makeStyles, Toolbar, Typography
-} from "@material-ui/core"
-import mockData from "./mockData";
-import { useState } from 'react';
-import { toFirstCharUppercase } from './contants';
-import pokemon from 'pokemontcgsdk'
-import { Pagination } from '@mui/material';
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  CircularProgress,
+  Toolbar,
+  AppBar,
+  TextField,
+} from "@material-ui/core";
+import { fade, makeStyles } from "@material-ui/core/styles";
+import { toFirstCharUppercase } from "./constants";
+import SearchIcon from "@material-ui/icons/Search";
+import axios from "axios";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   pokedexContainer: {
-    paddingTop: '20px',
-    paddingLeft: '50px',
-    paddingRight: '50px',
+    paddingTop: "20px",
+    paddingLeft: "50px",
+    paddingRight: "50px",
   },
   cardMedia: {
-    margin: 'auto',
+    margin: "auto",
   },
-  CardContent: {
-    textAlign: 'center',
+  cardContent: {
+    textAlign: "center",
   },
-  pokedexPaginotion: {
-    display: 'flex',
-    justifyContent: 'center',
+  searchContainer: {
+    display: "flex",
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    paddingLeft: "20px",
+    paddingRight: "20px",
+    marginTop: "5px",
+    marginBottom: "5px",
+  },
+  searchIcon: {
+    alignSelf: "flex-end",
+    marginBottom: "5px",
+  },
+  searchInput: {
+    width: "200px",
+    margin: "5px",
+  },
+}));
 
-  }
-});
-
-export default function Pokedex(props) {
-  const { history } = props;
-  
-  const getPokemonCard = (pokemonId) => {
-    const { id, name, images, rarity  } = pokeData[`${pokemonId}`];
-    return (
-      <Grid item xs={12} sm={3}>
-        <Card onClick={() => history.push(`/${id}`)}><CardMedia
-          className={classes.cardMedia}
-          image={images.small}
-          style={{ width: '245px', height: '342px' }}
-        />
-          <CardContent className={classes.CardContent}>
-            <Typography>{name}</Typography>
-            <Typography>{rarity ? "Rarity: " + rarity : "Null"}</Typography>
-          </CardContent> </Card>
-      </Grid>
-    )
-  };
+const Pokedex = (props) => {
   const classes = useStyles();
-  const [pokeData, setPokeData] = useState([]);
-  const [pageNumber, setPageNumber] = useState(1);
-
-  const handleChange = (event, value) => {
-    setPageNumber(value);
-  };
+  const { history } = props;
+  const [pokemonData, setPokemonData] = useState({});
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    pokemon.configure({ apiKey: '2f267b09-0f6e-4ecd-aa3f-9b22cd800c2f' })
-    pokemon.card.where({ pageSize: 12, page: pageNumber })
-      .then(result => {
-        setPokeData(result.data);
-        console.log(result.data)
+    axios
+      .get(`https://pokeapi.co/api/v2/pokemon?limit=807`)
+      .then(function (response) {
+        const { data } = response;
+        const { results } = data;
+        const newPokemonData = {};
+        results.forEach((pokemon, index) => {
+          newPokemonData[index + 1] = {
+            id: index + 1,
+            name: pokemon.name,
+            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+              index + 1
+            }.png`,
+          };
+        });
+        setPokemonData(newPokemonData);
       });
   }, []);
 
-  useEffect(() => {
-    pokemon.configure({ apiKey: '2f267b09-0f6e-4ecd-aa3f-9b22cd800c2f' })
-    pokemon.card.where({ pageSize: 12, page: pageNumber })
-      .then(result => {
-        setPokeData(result.data);
-      });
-  },[pageNumber]);
-  return (
+  const handleSearchChange = (e) => {
+    setFilter(e.target.value);
+  };
 
+  const getPokemonCard = (pokemonId) => {
+    const { id, name, sprite } = pokemonData[pokemonId];
+    return (
+      <Grid item xs={4} key={pokemonId}>
+        <Card onClick={() => history.push(`/${id}`)}>
+          <CardMedia
+            className={classes.cardMedia}
+            image={sprite}
+            style={{ width: "130px", height: "130px" }}
+          />
+          <CardContent className={classes.cardContent}>
+            <Typography>{`${id}. ${toFirstCharUppercase(name)}`}</Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+    );
+  };
+
+  return (
     <>
-      <AppBar position='static'>
-        <Toolbar />
+      <AppBar position="static">
+        <Toolbar>
+          <div className={classes.searchContainer}>
+            <SearchIcon className={classes.searchIcon} />
+            <TextField
+              className={classes.searchInput}
+              onChange={handleSearchChange}
+              label="Pokemon"
+              variant="standard"
+            />
+          </div>
+        </Toolbar>
       </AppBar>
-      {pokeData ? (
+      {pokemonData ? (
         <Grid container spacing={2} className={classes.pokedexContainer}>
-          {Object.keys(pokeData).map(id =>
-            getPokemonCard(id))}
+          {Object.keys(pokemonData).map(
+            (pokemonId) =>
+              pokemonData[pokemonId].name.includes(filter) &&
+              getPokemonCard(pokemonId)
+          )}
         </Grid>
       ) : (
         <CircularProgress />
       )}
-
-      <Grid className={classes.pokedexPaginotion}>
-        <Pagination size='large'  page={pageNumber}  onChange={(handleChange)} count={10} color="primary" />
-      </Grid>
-
-
     </>
   );
-}
+};
+
+export default Pokedex;

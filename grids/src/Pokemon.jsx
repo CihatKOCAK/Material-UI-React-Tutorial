@@ -1,62 +1,85 @@
-import { Link, Typography } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { toFirstCharUppercase } from './contants';
-import mockData from './mockData';
-import pokemon from 'pokemontcgsdk'
+import React, { useEffect, useState } from "react";
+import { Typography, Link, CircularProgress, Button, makeStyles, Grid } from "@material-ui/core";
+import { toFirstCharUppercase } from "./constants";
+import axios from "axios";
 
-export default function Pokemon(props) {
-  const { match } = props;
+
+
+
+const useStyles = makeStyles(() => ({
+  pokemonContainer: {
+    display: "flex",
+    flexDirection: "column",
+    justifyItems: "center",
+    alignItems: "center",
+  },
+}));
+
+const Pokemon = (props) => {
+  const { match, history } = props;
   const { params } = match;
   const { pokemonId } = params;
-  const [pokeData, setPokeData] = useState([]);
-  console.log(pokemonId)
+  const [pokemon, setPokemon] = useState(undefined);
+  const classes = useStyles();
+  useEffect(() => {
+    axios
+      .get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}/`)
+      .then(function (response) {
+        const { data } = response;
+        setPokemon(data);
+      })
+      .catch(function (error) {
+        setPokemon(false);
+      });
+  }, [pokemonId]);
 
 
-  console.log("asd")
-  pokemon.configure({ apiKey: '2f267b09-0f6e-4ecd-aa3f-9b22cd800c2f' })
-  pokemon.card.all({ q: 'set.id:'+pokemonId })
-    .then(result => {
-      console.log(result.data[0])
-      setPokeData(result.data[0])
-    });
 
-
-    console.log(pokeData)
-  const genaretePokemonJSX = () => {
-    /*
-    const { name, id, spacies, height, weight, types, sprites } = pokeData;
-    //spaces is error -> link is broken
-    const fullImageUrl = `https://pokeres.bastionbot.org/images/pokemon/${id}.png`;
+  const generatePokemonJSX = (pokemon) => {
+    const { name, id, species, height, weight, types, sprites } = pokemon;
     const { front_default } = sprites;
-*/
 
     return (
-      <div>hello</div>
-      /*
       <>
-        <Typography variant='h1'>
+
+        <Typography variant="h1">
           {`${id}.`} {toFirstCharUppercase(name)}
           <img src={front_default} />
         </Typography>
-        <img style={{ width: '300px', height: '300px' }} src={fullImageUrl} />
-        <Typography>{"Spacites: "}
-          <Link href={spacies.url}>{spacies.name}</Link>
+        <img style={{ width: "300px", height: "300px" }} src={front_default} />
+        <Typography variant="h3">Pokemon Info</Typography>
+        <Typography>
+          {"Species: "}
+          <Link href={species.url}>{species.name} </Link>
         </Typography>
-        <Typography>Height: {height}</Typography>
-        <Typography>Weight: {weight}</Typography>
-        <Typography variant="h6">Types:</Typography>
+        <Typography>Height: {height} </Typography>
+        <Typography>Weight: {weight} </Typography>
+        <Typography variant="h6"> Types:</Typography>
         {types.map((typeInfo) => {
           const { type } = typeInfo;
           const { name } = type;
-          return <Typography key={name}>{`${name}`}</Typography>
+          return <Typography key={name}> {`${name}`}</Typography>;
         })}
+
       </>
-      */
-    )
+    );
   };
+
   return (
     <>
-      {genaretePokemonJSX()}
+      <Grid item xs={12} columnSpacing={4} className={classes.pokemonContainer}>
+      {pokemon === undefined && <CircularProgress />}
+      {pokemon !== undefined && pokemon && generatePokemonJSX(pokemon)}
+      {pokemon === false && <Typography> Pokemon not found</Typography>}
+
+      {pokemon !== undefined && (
+        <Button variant="contained" onClick={() => history.push("/")}>
+          back to pokedex
+        </Button>
+      )}
+    </Grid>
     </>
   );
-}
+};
+
+export default Pokemon;
